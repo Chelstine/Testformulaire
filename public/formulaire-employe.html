@@ -1,12 +1,15 @@
 <!DOCTYPE html>
 <html lang="fr">
+
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>NOVEK AI - Enregistrement Employé</title>
   <style>
     /* === RESET & BASE === */
-    *, *::before, *::after {
+    *,
+    *::before,
+    *::after {
       box-sizing: border-box;
       margin: 0;
       padding: 0;
@@ -188,8 +191,13 @@
     }
 
     @keyframes spin {
-      from { transform: translateY(-50%) rotate(0deg); }
-      to { transform: translateY(-50%) rotate(360deg); }
+      from {
+        transform: translateY(-50%) rotate(0deg);
+      }
+
+      to {
+        transform: translateY(-50%) rotate(360deg);
+      }
     }
 
     /* === ERROR MESSAGE === */
@@ -392,6 +400,7 @@
     }
   </style>
 </head>
+
 <body>
   <header class="header">
     <img src="image/logo-novek.jpeg" alt="NOVEK AI Logo" class="logo">
@@ -465,7 +474,8 @@
               <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
               <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
             </svg>
-            <input type="password" id="pin" name="pin" class="form-input pin-input" placeholder="Votre code PIN" maxlength="6" required>
+            <input type="password" id="pin" name="pin" class="form-input pin-input" placeholder="Votre code PIN"
+              maxlength="6" required>
             <button type="button" class="pin-toggle" id="pinToggle" aria-label="Afficher le PIN">
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="20" height="20">
                 <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
@@ -485,7 +495,8 @@
               <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
               <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
             </svg>
-            <input type="password" id="confirmPin" name="confirmPin" class="form-input pin-input" placeholder="Confirmez votre code PIN" maxlength="6" required>
+            <input type="password" id="confirmPin" name="confirmPin" class="form-input pin-input"
+              placeholder="Confirmez votre code PIN" maxlength="6" required>
             <button type="button" class="pin-toggle" id="confirmPinToggle" aria-label="Afficher le PIN">
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="20" height="20">
                 <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
@@ -509,7 +520,8 @@
         <!-- Submit Button -->
         <button type="submit" class="btn btn-primary" id="submitBtn">
           <span id="submitText">Enregistrer l'employé</span>
-          <svg id="submitSpinner" class="spinner" style="display: none;" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <svg id="submitSpinner" class="spinner" style="display: none;" viewBox="0 0 24 24" fill="none"
+            stroke="currentColor" stroke-width="2">
             <path d="M21 12a9 9 0 1 1-6.219-8.56"></path>
           </svg>
         </button>
@@ -525,18 +537,18 @@
       </div>
       <h2>Inscription réussie !</h2>
       <p>Bienvenue Parmis nous à Novek AI.</p>
-      
+
       <div class="matricule-box">
         <span>Matricule</span>
         <strong id="matriculeValue">-</strong>
       </div>
-      
+
       <div class="qr-id-box">
         <span>QR ID</span>
         <strong id="qrIdValue">-</strong>
       </div>
-      
-      
+
+
     </div>
   </main>
 
@@ -546,13 +558,10 @@
 
   <script>
     // =============================================
-    // CONFIGURATION AIRTABLE
+    // API CONFIGURATION
     // =============================================
-    const AIRTABLE_CONFIG = {
-      apiKey: 'patzYhseux31kAAT0.8712c0d026f16e1ececcd37ab101a59925147429535bd8d3dd3b002ab6b8330f', // Remplacez par votre clé API
-      baseId: 'appG6xMsDsHJRZAkn',           // Remplacez par votre Base ID
-      tableName: 'Employees'             // Nom de votre table
-    };
+    // Using local API to secure credentials
+    const API_URL = '/api/employees';
 
     // =============================================
     // ELEMENTS DOM
@@ -566,7 +575,7 @@
     const generalError = document.getElementById('generalError');
     const generalErrorText = document.getElementById('generalErrorText');
     const newRegistrationBtn = document.getElementById('newRegistrationBtn');
-    
+
     const pinInput = document.getElementById('pin');
     const confirmPinInput = document.getElementById('confirmPin');
     const pinToggle = document.getElementById('pinToggle');
@@ -576,17 +585,6 @@
     // =============================================
     // UTILITAIRES
     // =============================================
-    function generateMatricule() {
-      const year = new Date().getFullYear();
-      const randomNum = Math.floor(Math.random() * 99999).toString().padStart(5, '0');
-      return `NOV-EMP-${year}-${randomNum}`;
-    }
-
-    function generateQrId() {
-      const randomNum = Math.floor(Math.random() * 99999).toString().padStart(5, '0');
-      return `EMP-${randomNum}`;
-    }
-
     function showError(fieldId, message) {
       const errorElement = document.getElementById(fieldId + 'Error');
       const inputElement = document.getElementById(fieldId);
@@ -621,7 +619,7 @@
     pinToggle.addEventListener('click', () => {
       pinVisible = !pinVisible;
       pinInput.type = pinVisible ? 'text' : 'password';
-      pinToggle.innerHTML = pinVisible 
+      pinToggle.innerHTML = pinVisible
         ? '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="20" height="20"><path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"></path><line x1="1" y1="1" x2="23" y2="23"></line></svg>'
         : '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="20" height="20"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></svg>';
     });
@@ -629,7 +627,7 @@
     confirmPinToggle.addEventListener('click', () => {
       confirmPinVisible = !confirmPinVisible;
       confirmPinInput.type = confirmPinVisible ? 'text' : 'password';
-      confirmPinToggle.innerHTML = confirmPinVisible 
+      confirmPinToggle.innerHTML = confirmPinVisible
         ? '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="20" height="20"><path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"></path><line x1="1" y1="1" x2="23" y2="23"></line></svg>'
         : '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="20" height="20"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></svg>';
     });
@@ -644,7 +642,7 @@
       const value = e.target.value.replace(/\D/g, '');
       e.target.value = value;
       clearError('pin');
-      
+
       clearTimeout(pinCheckTimeout);
       pinStatus.innerHTML = '';
       pinStatus.className = 'pin-status';
@@ -653,7 +651,7 @@
       if (value.length >= 4 && value.length <= 6) {
         pinStatus.innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12a9 9 0 1 1-6.219-8.56"></path></svg>';
         pinStatus.className = 'pin-status checking';
-        
+
         pinCheckTimeout = setTimeout(() => checkPinAvailability(value), 500);
       }
     });
@@ -665,18 +663,13 @@
 
     async function checkPinAvailability(pin) {
       try {
-        const url = `https://api.airtable.com/v0/${AIRTABLE_CONFIG.baseId}/${AIRTABLE_CONFIG.tableName}?filterByFormula={pin}="${pin}"`;
-        
-        const response = await fetch(url, {
-          headers: {
-            'Authorization': `Bearer ${AIRTABLE_CONFIG.apiKey}`
-          }
-        });
+        const response = await fetch(`${API_URL}?pin=${pin}`);
 
         if (!response.ok) throw new Error('Erreur API');
 
         const data = await response.json();
-        isPinAvailable = data.records.length === 0;
+        // The API returns { available: boolean }
+        isPinAvailable = data.available;
 
         if (isPinAvailable) {
           pinStatus.innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"></polyline></svg>';
@@ -757,60 +750,51 @@
     // =============================================
     form.addEventListener('submit', async (e) => {
       e.preventDefault();
-      
+
       if (!validateForm()) return;
 
       setLoading(true);
 
-      const matricule = generateMatricule();
-      const qrId = generateQrId();
-
-      const employeeData = {
-        fields: {
-          nom: document.getElementById('nom').value.trim(),
-          prenom: document.getElementById('prenom').value.trim(),
-          poste: document.getElementById('poste').value.trim(),
-          date_naissance: document.getElementById('dateNaissance').value,
-          pin: pinInput.value,
-          matricule: matricule,
-          qr_id: qrId,
-          actif: true,
-          date_inscription: new Date().toISOString().split('T')[0]
-        }
+      const payload = {
+        nom: document.getElementById('nom').value.trim(),
+        prenom: document.getElementById('prenom').value.trim(),
+        poste: document.getElementById('poste').value.trim(),
+        dateNaissance: document.getElementById('dateNaissance').value,
+        pin: pinInput.value
       };
 
       try {
-        const response = await fetch(
-          `https://api.airtable.com/v0/${AIRTABLE_CONFIG.baseId}/${AIRTABLE_CONFIG.tableName}`,
-          {
-            method: 'POST',
-            headers: {
-              'Authorization': `Bearer ${AIRTABLE_CONFIG.apiKey}`,
-              'Content-Type': 'application/json'
-            },
-            body: JSON.stringify(employeeData)
-          }
-        );
+        const response = await fetch(API_URL, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify(payload)
+        });
+
+        const data = await response.json();
 
         if (!response.ok) {
-          const errorData = await response.json();
-          throw new Error(errorData.error?.message || 'Erreur lors de l\'enregistrement');
+          throw new Error(data.error || 'Erreur lors de l\'enregistrement');
         }
 
         // Success - show success screen
-        document.getElementById('matriculeValue').textContent = matricule;
-        document.getElementById('qrIdValue').textContent = qrId;
+        document.getElementById('matriculeValue').textContent = data.matricule;
+        document.getElementById('qrIdValue').textContent = data.qrId;
+
         formContent.classList.add('hidden');
         successScreen.classList.add('active');
+        window.scrollTo(0, 0);
 
       } catch (error) {
-        console.error('Erreur:', error);
-        generalErrorText.textContent = error.message || 'Une erreur est survenue lors de l\'enregistrement';
+        console.error('Submit Error:', error);
         generalError.style.display = 'flex';
+        generalErrorText.textContent = error.message;
       } finally {
         setLoading(false);
       }
     });
+
 
     // =============================================
     // NEW REGISTRATION
@@ -831,4 +815,5 @@
     });
   </script>
 </body>
+
 </html>
