@@ -1,8 +1,9 @@
 import { NextRequest, NextResponse } from "next/server"
 
-const AIRTABLE_API_KEY = 'patzYhseux31kAAT0.8712c0d026f16e1ececcd37ab101a59925147429535bd8d3dd3b002ab6b8330f'
-const AIRTABLE_BASE_ID = 'appG6xMsDsHJRZAkn'
+const AIRTABLE_API_KEY = process.env.AIRTABLE_API_KEY
+const AIRTABLE_BASE_ID = process.env.AIRTABLE_BASE_ID
 const TABLE_NAME = "Employees"
+
 
 interface AirtableRecord {
   id: string
@@ -27,7 +28,7 @@ interface AirtableResponse {
 // Check if PIN already exists
 async function checkPinExists(pin: string): Promise<boolean> {
   const url = `https://api.airtable.com/v0/${AIRTABLE_BASE_ID}/${encodeURIComponent(TABLE_NAME)}?filterByFormula={pin}="${pin}"`
-  
+
   const response = await fetch(url, {
     headers: {
       Authorization: `Bearer ${AIRTABLE_API_KEY}`,
@@ -100,7 +101,7 @@ export async function POST(request: NextRequest) {
 
     // Create employee in Airtable
     const url = `https://api.airtable.com/v0/${AIRTABLE_BASE_ID}/${encodeURIComponent(TABLE_NAME)}`
-    
+
     const response = await fetch(url, {
       method: "POST",
       headers: {
