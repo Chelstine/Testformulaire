@@ -12,7 +12,7 @@ export default function RegisterPage() {
             alt="NOVEK AI Logo"
             width={150}
             height={60}
-            className="h-12 w-auto"
+            className="h-20 w-auto"
             priority
           />
         </div>
