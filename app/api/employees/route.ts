@@ -111,6 +111,15 @@ async function sendWelcomeEmail(to: string, nom: string, prenom: string, matricu
   }
 }
 
+// Cloudinary Configuration
+import { v2 as cloudinary } from "cloudinary"
+
+cloudinary.config({
+  cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
+  api_key: process.env.CLOUDINARY_API_KEY,
+  api_secret: process.env.CLOUDINARY_API_SECRET,
+})
+
 // POST - Create new employee
 export async function POST(request: NextRequest) {
   try {
@@ -157,15 +166,41 @@ export async function POST(request: NextRequest) {
       )
     }
 
-    // Generate matricule
+    // Generate matricule (Using first 3 letters of Nom + First letter of Prenom)
+    // Example: KOUAME Jean -> KOUJ-2024-12345
     const matricule = generateMatricule(nom, prenom)
 
-    // Handle Photo (Placeholder logic for Cloudinary)
-    // In a real scenario, upload 'photo' to Cloudinary here and get the URL.
-    // For now, we just acknowledge receipt.
-    const photoUrl = photo ? `https://placeholder.com/${photo.name}` : null
-    // ^ This URL won't work in Airtable attachment without a real host. 
-    // We will just store the filename in a text field if attachment fails, or skip it.
+    // Handle Photo Upload to Cloudinary
+    let photoUrl = ""
+    if (photo) {
+      try {
+        // Convert file to buffer
+        const arrayBuffer = await photo.arrayBuffer()
+        const buffer = Buffer.from(arrayBuffer)
+
+        // Upload to Cloudinary
+        const result = await new Promise<any>((resolve, reject) => {
+          cloudinary.uploader.upload_stream(
+            {
+              folder: "novek-employees",
+              public_id: `photo_${matricule}`,
+              overwrite: true,
+              resource_type: "image"
+            },
+            (error, result) => {
+              if (error) reject(error)
+              else resolve(result)
+            }
+          ).end(buffer)
+        })
+
+        photoUrl = result.secure_url
+      } catch (uploadError) {
+        console.error("Cloudinary upload failed:", uploadError)
+        // Optionally fail or continue without photo
+        // For now we continue, but you might want to return an error
+      }
+    }
 
     // Create employee in Airtable
     const url = `https://api.airtable.com/v0/${AIRTABLE_BASE_ID}/${encodeURIComponent(TABLE_NAME)}`
@@ -184,9 +219,10 @@ export async function POST(request: NextRequest) {
       date_inscription: new Date().toISOString().split("T")[0],
     }
 
-    // Note: To save photo in Airtable, 'photo' field must be an array of objects with 'url'.
-    // Since we don't have a real URL yet, we skip adding 'photo' to Airtable payload to avoid error.
-    // fields.photo = [{ url: photoUrl }] 
+    // Add photo if uploaded successfully
+    if (photoUrl) {
+      fields.photo = [{ url: photoUrl }]
+    }
 
     const response = await fetch(url, {
       method: "POST",
