@@ -82,26 +82,15 @@ async function sendWelcomeEmail(to: string, nom: string, prenom: string, matricu
         user: EMAIL_USER,
         pass: EMAIL_PASS,
       },
-      debug: true,
-      logger: true,
-      connectionTimeout: 15000, // 15 seconds
-      greetingTimeout: 10000,
-      socketTimeout: 15000,
+      connectionTimeout: 30000, // 30 seconds
+      greetingTimeout: 20000,
+      socketTimeout: 30000,
       tls: {
         rejectUnauthorized: false,
-        servername: EMAIL_HOST // Helps with SNI and firewall issues
       }
     })
 
-    // Verify connection configuration
-    try {
-      console.log(`[v0] 📡 E-MAIL: Verifying SMTP server...`)
-      await transporter.verify()
-      console.log("[v0] ✅ E-MAIL: Connection verified successfully")
-    } catch (verifyError: any) {
-      console.error("[v0] ❌ E-MAIL: Verification failed:", verifyError?.message || verifyError)
-      return // Stop if connection is not working
-    }
+    console.log(`[v0] 📡 E-MAIL: Transporter created, skipping verify, sending directly...`)
 
     // Email content
     const mailOptions = {
@@ -124,14 +113,16 @@ async function sendWelcomeEmail(to: string, nom: string, prenom: string, matricu
     }
 
     // Send email
-    if (EMAIL_HOST !== "smtp.example.com") {
-      const info = await transporter.sendMail(mailOptions)
-      console.log(`[v0] Email sent successfully: ${info.messageId}`)
-    } else {
-      console.log(`[v0] Email simulation: To ${to}, Matricule: ${matricule}`)
-    }
-  } catch (error) {
-    console.error("[v0] Detailed Error sending email:", error)
+    const info = await transporter.sendMail(mailOptions)
+    console.log(`[v0] ✅ Email sent successfully: ${info.messageId}`)
+  } catch (error: any) {
+    console.error("[v0] ❌ DETAILED Error sending email:", {
+      message: error?.message,
+      code: error?.code,
+      command: error?.command,
+      responseCode: error?.responseCode,
+      response: error?.response,
+    })
   }
 }
 

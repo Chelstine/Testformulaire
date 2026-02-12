@@ -5,7 +5,7 @@ export default function RegisterPage() {
   return (
     <main className="min-h-screen bg-background">
       {/* Header */}
-      <header className="bg-card shadow-sm border-b border-border">
+      <header className="shadow-sm border-b border-border">
         <div className="max-w-7xl mx-auto px-4 py-4 flex items-center justify-center">
           <Image
             src="/images/logo-novek.jpeg"
@@ -49,7 +49,7 @@ export default function RegisterPage() {
       </div>
 
       {/* Footer */}
-      <footer className="bg-card border-t border-border py-6 mt-auto">
+      <footer className="border-t border-border py-6 mt-auto">
         <div className="max-w-7xl mx-auto px-4 text-center">
           <p className="text-sm text-muted-foreground">
             © {new Date().getFullYear()} NOVEK AI. Tous droits réservés.

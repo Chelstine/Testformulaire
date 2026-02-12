@@ -32,7 +32,7 @@
 }
 
 :root {
-  --background: oklch(0.98 0.005 250);
+  --background: transparent;
   --foreground: oklch(0.25 0.05 250);
   --card: oklch(1 0 0);
   --card-foreground: oklch(0.25 0.05 250);
