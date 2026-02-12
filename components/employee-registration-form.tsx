@@ -243,6 +243,18 @@ export function EmployeeRegistrationForm() {
             <p className="text-sm text-muted-foreground mb-6">
               Conservez votre code PIN en lieu sûr. Il sera nécessaire pour le pointage.
             </p>
+            <div className="bg-blue-50 border border-blue-100 rounded-lg p-4 mb-6">
+              <p className="text-sm text-blue-800 mb-2">Faites votre premier pointage ici :</p>
+              <a
+                href="https://pointage.novekai.agency"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-primary font-semibold hover:underline flex items-center justify-center gap-2"
+              >
+                pointage.novekai.agency
+                <Briefcase className="w-4 h-4" />
+              </a>
+            </div>
             <Button onClick={resetForm} className="w-full" size="lg">
               Nouvelle inscription
             </Button>
