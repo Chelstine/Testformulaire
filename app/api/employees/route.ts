@@ -70,18 +70,21 @@ async function sendWelcomeEmail(to: string, nom: string, prenom: string, matricu
 
   try {
     // Create transporter with debug logging
+    const isSecure = EMAIL_PORT === 465
+    console.log(`[v0] Connecting to ${EMAIL_HOST}:${EMAIL_PORT} (Secure: ${isSecure})`)
+
     const transporter = nodemailer.createTransport({
       host: EMAIL_HOST,
       port: EMAIL_PORT,
-      secure: EMAIL_PORT === 465,
+      secure: isSecure,
       auth: {
         user: EMAIL_USER,
         pass: EMAIL_PASS,
       },
-      debug: true, // Show debug output
-      logger: true, // Log information in console
+      debug: true,
+      logger: true,
+      connectionTimeout: 10000, // 10 seconds timeout
       tls: {
-        // Essential for some shared hosting (o2switch) if certificates are strictly checked
         rejectUnauthorized: false
       }
     })
