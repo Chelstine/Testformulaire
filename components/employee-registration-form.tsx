@@ -238,7 +238,7 @@ export function EmployeeRegistrationForm() {
             </p>
             <div className="bg-muted/50 rounded-xl p-8 mb-8 border border-border">
               <p className="text-sm uppercase tracking-wider text-muted-foreground mb-3 font-semibold">Votre matricule</p>
-              <p className="text-3xl md:text-4xl font-mono font-black text-amber-500 tracking-wider drop-shadow-sm">{matricule}</p>
+              <p className="text-2xl md:text-3xl font-mono font-black text-amber-500 tracking-wider drop-shadow-sm whitespace-nowrap overflow-hidden text-ellipsis">{matricule}</p>
             </div>
             <Button onClick={resetForm} className="w-full" size="lg">
               Nouvelle inscription
