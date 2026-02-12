@@ -251,12 +251,11 @@ export async function POST(request: NextRequest) {
     const data = await response.json()
     const createdEmployee = data.records[0]
 
-    // Send Welcome Email
-    try {
-      await sendWelcomeEmail(email, nom, prenom, matricule)
-    } catch (emailError) {
-      console.error("[v0] Silent email error:", emailError)
-    }
+    // Send Welcome Email in background to speed up response
+    // We don't 'await' it so the user gets the success screen immediately
+    sendWelcomeEmail(email, nom, prenom, matricule).catch(err => {
+      console.error("[v0] Background email sending failed:", err)
+    })
 
     return NextResponse.json({
       success: true,
