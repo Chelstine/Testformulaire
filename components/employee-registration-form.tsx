@@ -450,7 +450,7 @@ export function EmployeeRegistrationForm() {
               <p className="text-sm text-destructive">{errors.pin}</p>
             )}
             {isPinAvailable === true && !errors.pin && (
-              <p className="text-sm text-green-600">PIN disponible</p>
+              <p className="text-sm text-green-600">Ce code PIN est libre (Identifiant unique)</p>
             )}
           </div>
 
