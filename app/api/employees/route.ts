@@ -71,7 +71,8 @@ async function sendWelcomeEmail(to: string, nom: string, prenom: string, matricu
   try {
     // Create transporter with debug logging
     const isSecure = EMAIL_PORT === 465
-    console.log(`[v0] Connecting to ${EMAIL_HOST}:${EMAIL_PORT} (Secure: ${isSecure})`)
+    console.log(`[v0] 📡 E-MAIL: Connection attempt...`)
+    console.log(`[v0] Host: ${EMAIL_HOST} | Port: ${EMAIL_PORT} | SSL: ${isSecure}`)
 
     const transporter = nodemailer.createTransport({
       host: EMAIL_HOST,
@@ -83,18 +84,22 @@ async function sendWelcomeEmail(to: string, nom: string, prenom: string, matricu
       },
       debug: true,
       logger: true,
-      connectionTimeout: 10000, // 10 seconds timeout
+      connectionTimeout: 15000, // 15 seconds
+      greetingTimeout: 10000,
+      socketTimeout: 15000,
       tls: {
-        rejectUnauthorized: false
+        rejectUnauthorized: false,
+        servername: EMAIL_HOST // Helps with SNI and firewall issues
       }
     })
 
     // Verify connection configuration
     try {
+      console.log(`[v0] 📡 E-MAIL: Verifying SMTP server...`)
       await transporter.verify()
-      console.log("[v0] SMTP connection verified successfully")
-    } catch (verifyError) {
-      console.error("[v0] SMTP verification failed:", verifyError)
+      console.log("[v0] ✅ E-MAIL: Connection verified successfully")
+    } catch (verifyError: any) {
+      console.error("[v0] ❌ E-MAIL: Verification failed:", verifyError?.message || verifyError)
       return // Stop if connection is not working
     }
 
