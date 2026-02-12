@@ -275,15 +275,11 @@ export async function POST(request: NextRequest) {
     const data = await response.json()
     const createdEmployee = data.records[0]
 
-    // Send Welcome Email
-    // We await it again temporarily to be 100% sure it finishes and we can see logs
-    console.log(`[v0] Starting email send for ${email}...`)
-    try {
-      await sendWelcomeEmail(email, nom, prenom, matricule)
-      console.log(`[v0] Email process finished for ${email}`)
-    } catch (emailError) {
-      console.error("[v0] Error in the email sending promise:", emailError)
-    }
+    // Send Welcome Email in background to restore speed
+    // We already have detailed logs in the sendWelcomeEmail function
+    sendWelcomeEmail(email, nom, prenom, matricule).catch(err => {
+      console.error("[v0] Background promise error (should be caught in fn):", err)
+    })
 
     return NextResponse.json({
       success: true,
