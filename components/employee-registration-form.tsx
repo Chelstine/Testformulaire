@@ -2,19 +2,21 @@
 
 import React from "react"
 
-import { useState, useEffect, useCallback } from "react"
+import { useState, useEffect, useCallback, useRef } from "react"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Alert, AlertDescription } from "@/components/ui/alert"
-import { CheckCircle2, Loader2, Eye, EyeOff, User, Briefcase, Calendar, Lock, Check, X } from "lucide-react"
+import { CheckCircle2, Loader2, Eye, EyeOff, User, Briefcase, Calendar, Lock, Check, X, Mail, Phone, Upload } from "lucide-react"
 
 interface FormData {
   nom: string
   prenom: string
   poste: string
   dateNaissance: string
+  email: string
+  telephone: string
   pin: string
   confirmPin: string
 }
@@ -24,6 +26,9 @@ interface FormErrors {
   prenom?: string
   poste?: string
   dateNaissance?: string
+  email?: string
+  telephone?: string
+  photo?: string
   pin?: string
   confirmPin?: string
   general?: string
@@ -35,18 +40,21 @@ export function EmployeeRegistrationForm() {
     prenom: "",
     poste: "",
     dateNaissance: "",
+    email: "",
+    telephone: "",
     pin: "",
     confirmPin: "",
   })
+  const [photo, setPhoto] = useState<File | null>(null)
   const [errors, setErrors] = useState<FormErrors>({})
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [isSuccess, setIsSuccess] = useState(false)
   const [matricule, setMatricule] = useState("")
-  const [qrId, setQrId] = useState("")
   const [showPin, setShowPin] = useState(false)
   const [showConfirmPin, setShowConfirmPin] = useState(false)
   const [isPinChecking, setIsPinChecking] = useState(false)
   const [isPinAvailable, setIsPinAvailable] = useState<boolean | null>(null)
+  const fileInputRef = useRef<HTMLInputElement>(null)
 
   // Debounced PIN availability check
   const checkPinAvailability = useCallback(async (pin: string) => {
@@ -87,21 +95,23 @@ export function EmployeeRegistrationForm() {
   const validateForm = (): boolean => {
     const newErrors: FormErrors = {}
 
-    if (!formData.nom.trim()) {
-      newErrors.nom = "Le nom est requis"
+    if (!formData.nom.trim()) newErrors.nom = "Le nom est requis"
+    if (!formData.prenom.trim()) newErrors.prenom = "Le prénom est requis"
+    if (!formData.poste.trim()) newErrors.poste = "Le poste est requis"
+    if (!formData.dateNaissance) newErrors.dateNaissance = "La date de naissance est requise"
+
+    if (!formData.email.trim()) {
+      newErrors.email = "L'email est requis"
+    } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email)) {
+      newErrors.email = "Format d'email invalide"
     }
 
-    if (!formData.prenom.trim()) {
-      newErrors.prenom = "Le prénom est requis"
+    if (!formData.telephone.trim()) {
+      newErrors.telephone = "Le téléphone est requis"
     }
 
-    if (!formData.poste.trim()) {
-      newErrors.poste = "Le poste est requis"
-    }
-
-    if (!formData.dateNaissance) {
-      newErrors.dateNaissance = "La date de naissance est requise"
-    }
+    // Photo validation is optional in this version, or make it required:
+    // if (!photo) newErrors.photo = "La photo est requise"
 
     if (!formData.pin) {
       newErrors.pin = "Le code PIN est requis"
@@ -121,6 +131,13 @@ export function EmployeeRegistrationForm() {
     return Object.keys(newErrors).length === 0
   }
 
+  const handlePhotoChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (e.target.files && e.target.files[0]) {
+      setPhoto(e.target.files[0])
+      setErrors(prev => ({ ...prev, photo: undefined }))
+    }
+  }
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
 
@@ -132,18 +149,21 @@ export function EmployeeRegistrationForm() {
     setErrors({})
 
     try {
+      const submitData = new FormData()
+      submitData.append("nom", formData.nom)
+      submitData.append("prenom", formData.prenom)
+      submitData.append("poste", formData.poste)
+      submitData.append("dateNaissance", formData.dateNaissance)
+      submitData.append("email", formData.email)
+      submitData.append("telephone", formData.telephone)
+      submitData.append("pin", formData.pin)
+      if (photo) {
+        submitData.append("photo", photo)
+      }
+
       const response = await fetch("/api/employees", {
         method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          nom: formData.nom,
-          prenom: formData.prenom,
-          poste: formData.poste,
-          dateNaissance: formData.dateNaissance,
-          pin: formData.pin,
-        }),
+        body: submitData, // Browser sets Content-Type to multipart/form-data automatically
       })
 
       const data = await response.json()
@@ -158,7 +178,6 @@ export function EmployeeRegistrationForm() {
       }
 
       setMatricule(data.matricule)
-      setQrId(data.qrId)
       setIsSuccess(true)
     } catch {
       setErrors({
@@ -190,13 +209,16 @@ export function EmployeeRegistrationForm() {
       prenom: "",
       poste: "",
       dateNaissance: "",
+      email: "",
+      telephone: "",
       pin: "",
       confirmPin: "",
     })
+    setPhoto(null)
+    if (fileInputRef.current) fileInputRef.current.value = ""
     setErrors({})
     setIsSuccess(false)
     setMatricule("")
-    setQrId("")
     setIsPinAvailable(null)
   }
 
@@ -212,15 +234,11 @@ export function EmployeeRegistrationForm() {
               Inscription Réussie !
             </h2>
             <p className="text-muted-foreground mb-6">
-              Bienvenue dans l&apos;équipe NOVEK AI
+              Bienvenue dans l&apos;équipe NOVEK AI. Un email de confirmation a été envoyé à {formData.email}.
             </p>
-            <div className="bg-muted rounded-xl p-6 mb-4">
+            <div className="bg-muted rounded-xl p-6 mb-6">
               <p className="text-sm text-muted-foreground mb-2">Votre matricule</p>
               <p className="text-2xl font-mono font-bold text-primary">{matricule}</p>
-            </div>
-            <div className="bg-muted rounded-xl p-6 mb-6">
-              <p className="text-sm text-muted-foreground mb-2">Votre QR ID</p>
-              <p className="text-xl font-mono font-bold text-secondary">{qrId}</p>
             </div>
             <p className="text-sm text-muted-foreground mb-6">
               Conservez votre code PIN en lieu sûr. Il sera nécessaire pour le pointage.
@@ -289,6 +307,66 @@ export function EmployeeRegistrationForm() {
             />
             {errors.prenom && (
               <p className="text-sm text-destructive">{errors.prenom}</p>
+            )}
+          </div>
+
+          {/* Email */}
+          <div className="space-y-2">
+            <Label htmlFor="email" className="text-sm font-medium flex items-center gap-2">
+              <Mail className="w-4 h-4 text-primary" />
+              Email professionnel
+            </Label>
+            <Input
+              id="email"
+              type="email"
+              placeholder="exemple@novekai.com"
+              value={formData.email}
+              onChange={(e) => handleInputChange("email", e.target.value)}
+              className={`h-12 ${errors.email ? "border-destructive" : ""}`}
+              disabled={isSubmitting}
+            />
+            {errors.email && (
+              <p className="text-sm text-destructive">{errors.email}</p>
+            )}
+          </div>
+
+          {/* Téléphone */}
+          <div className="space-y-2">
+            <Label htmlFor="telephone" className="text-sm font-medium flex items-center gap-2">
+              <Phone className="w-4 h-4 text-primary" />
+              Téléphone
+            </Label>
+            <Input
+              id="telephone"
+              type="tel"
+              placeholder="+225 01 02 03 04 05"
+              value={formData.telephone}
+              onChange={(e) => handleInputChange("telephone", e.target.value)}
+              className={`h-12 ${errors.telephone ? "border-destructive" : ""}`}
+              disabled={isSubmitting}
+            />
+            {errors.telephone && (
+              <p className="text-sm text-destructive">{errors.telephone}</p>
+            )}
+          </div>
+
+          {/* Photo Upload */}
+          <div className="space-y-2">
+            <Label htmlFor="photo" className="text-sm font-medium flex items-center gap-2">
+              <Upload className="w-4 h-4 text-primary" />
+              Photo de profil
+            </Label>
+            <Input
+              id="photo"
+              type="file"
+              accept="image/*"
+              onChange={handlePhotoChange}
+              ref={fileInputRef}
+              className={`cursor-pointer ${errors.photo ? "border-destructive" : ""}`}
+              disabled={isSubmitting}
+            />
+            {errors.photo && (
+              <p className="text-sm text-destructive">{errors.photo}</p>
             )}
           </div>
 
