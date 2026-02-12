@@ -252,17 +252,24 @@ export async function POST(request: NextRequest) {
     const createdEmployee = data.records[0]
 
     // Send Welcome Email
-    await sendWelcomeEmail(email, nom, prenom, matricule)
+    try {
+      await sendWelcomeEmail(email, nom, prenom, matricule)
+    } catch (emailError) {
+      console.error("[v0] Silent email error:", emailError)
+    }
 
     return NextResponse.json({
       success: true,
       matricule,
       employeeId: createdEmployee.id,
     })
-  } catch (error) {
-    console.error("[v0] Error creating employee:", error)
+  } catch (error: any) {
+    console.error("[v0] CRITICAL ERROR in /api/employees:", error)
     return NextResponse.json(
-      { error: "Une erreur est survenue lors de l'enregistrement" },
+      {
+        error: "Une erreur est survenue lors de l'enregistrement",
+        details: error?.message || "Unknown error"
+      },
       { status: 500 }
     )
   }
