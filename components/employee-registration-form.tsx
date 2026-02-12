@@ -236,24 +236,9 @@ export function EmployeeRegistrationForm() {
             <p className="text-muted-foreground mb-6">
               Bienvenue dans l&apos;équipe NOVEK AI. Un email de confirmation a été envoyé à {formData.email}.
             </p>
-            <div className="bg-muted rounded-xl p-6 mb-6">
-              <p className="text-sm text-muted-foreground mb-2">Votre matricule</p>
-              <p className="text-2xl font-mono font-bold text-primary">{matricule}</p>
-            </div>
-            <p className="text-sm text-muted-foreground mb-6">
-              Conservez votre code PIN en lieu sûr. Il sera nécessaire pour le pointage.
-            </p>
-            <div className="bg-blue-50 border border-blue-100 rounded-lg p-4 mb-6">
-              <p className="text-sm text-blue-800 mb-2">Faites votre premier pointage ici :</p>
-              <a
-                href="https://pointage.novekai.agency"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="text-primary font-semibold hover:underline flex items-center justify-center gap-2"
-              >
-                pointage.novekai.agency
-                <Briefcase className="w-4 h-4" />
-              </a>
+            <div className="bg-muted/50 rounded-xl p-8 mb-8 border border-border">
+              <p className="text-sm uppercase tracking-wider text-muted-foreground mb-3 font-semibold">Votre matricule</p>
+              <p className="text-4xl md:text-5xl font-mono font-black text-amber-500 tracking-wider drop-shadow-sm">{matricule}</p>
             </div>
             <Button onClick={resetForm} className="w-full" size="lg">
               Nouvelle inscription
