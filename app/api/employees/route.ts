@@ -66,17 +66,34 @@ function generateMatricule(nom: string, prenom: string): string {
 
 // Send Welcome Email
 async function sendWelcomeEmail(to: string, nom: string, prenom: string, matricule: string) {
+  console.log(`[v0] Attempting to send email to ${to}...`)
+
   try {
-    // Create transporter
+    // Create transporter with debug logging
     const transporter = nodemailer.createTransport({
       host: EMAIL_HOST,
       port: EMAIL_PORT,
-      secure: EMAIL_PORT === 465, // true for 465, false for other ports
+      secure: EMAIL_PORT === 465,
       auth: {
         user: EMAIL_USER,
         pass: EMAIL_PASS,
       },
+      debug: true, // Show debug output
+      logger: true, // Log information in console
+      tls: {
+        // Essential for some shared hosting (o2switch) if certificates are strictly checked
+        rejectUnauthorized: false
+      }
     })
+
+    // Verify connection configuration
+    try {
+      await transporter.verify()
+      console.log("[v0] SMTP connection verified successfully")
+    } catch (verifyError) {
+      console.error("[v0] SMTP verification failed:", verifyError)
+      return // Stop if connection is not working
+    }
 
     // Email content
     const mailOptions = {
@@ -98,16 +115,15 @@ async function sendWelcomeEmail(to: string, nom: string, prenom: string, matricu
       `,
     }
 
-    // Send email (Only if configured, otherwise log it)
+    // Send email
     if (EMAIL_HOST !== "smtp.example.com") {
-      await transporter.sendMail(mailOptions)
-      console.log(`[v0] Email sent to ${to}`)
+      const info = await transporter.sendMail(mailOptions)
+      console.log(`[v0] Email sent successfully: ${info.messageId}`)
     } else {
       console.log(`[v0] Email simulation: To ${to}, Matricule: ${matricule}`)
     }
   } catch (error) {
-    console.error("[v0] Error sending email:", error)
-    // Don't throw error to prevent blocking the registration response
+    console.error("[v0] Detailed Error sending email:", error)
   }
 }
 
