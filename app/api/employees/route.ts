@@ -318,9 +318,9 @@ export async function GET(request: NextRequest) {
     })
   } catch (error) {
     console.error("[v0] Error checking PIN:", error)
-    return NextResponse.json(
-      { error: "Erreur lors de la vérification du PIN" },
-      { status: 500 }
-    )
+    // Si Airtable est injoignable, on laisse passer (vérification au POST)
+    return NextResponse.json({
+      available: true,
+    })
   }
 }
