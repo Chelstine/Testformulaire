@@ -1,7 +1,6 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-    // Optimized for Railway deployment
-    output: 'standalone',
+    serverExternalPackages: ['cloudinary'],
 }
 
 module.exports = nextConfig
