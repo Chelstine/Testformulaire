@@ -98,7 +98,7 @@ async function sendViaResend(to: string, nom: string, prenom: string, matricule:
     console.log("[v0] 📡 Sending email via Resend API...")
 
     const { data, error } = await resend.emails.send({
-      from: "NOVEK AI <onboarding@resend.dev>",
+      from: "NOVEK AI <assistant@inscription.novekai.agency>",
       to: [to],
       subject: "Bienvenue chez NOVEK AI - Votre Inscription",
       html: getWelcomeEmailHtml(nom, prenom, matricule),
@@ -169,7 +169,7 @@ async function sendWelcomeEmail(to: string, nom: string, prenom: string, matricu
   // Fallback to SMTP (o2switch)
   console.log("[v0] ⚠️ Resend failed or not configured, trying SMTP fallback...")
   const sentViaSMTP = await sendViaSMTP(to, nom, prenom, matricule)
-  
+
   if (!sentViaSMTP) {
     console.error("[v0] ❌ ALL email methods failed! Email NOT sent to:", to)
   }
