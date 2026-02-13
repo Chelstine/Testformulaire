@@ -37,7 +37,7 @@ interface AirtableResponse {
   offset?: string
 }
 
-// Check if PIN already exists
+// verifier l'existence d'un pin
 async function checkPinExists(pin: string): Promise<boolean> {
   const url = `https://api.airtable.com/v0/${AIRTABLE_BASE_ID}/${encodeURIComponent(TABLE_NAME)}?filterByFormula={pin}="${pin}"`
 
