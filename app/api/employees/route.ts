@@ -42,7 +42,9 @@ async function checkPinExists(pin: string): Promise<boolean> {
   })
 
   if (!response.ok) {
-    throw new Error("Erreur lors de la vérification du PIN")
+    const errorText = await response.text()
+    console.error(`[v0] Airtable checkPinExists failed: ${response.status} ${response.statusText}`, errorText)
+    throw new Error(`Erreur lors de la vérification du PIN (${response.status})`)
   }
 
   const data: AirtableResponse = await response.json()
