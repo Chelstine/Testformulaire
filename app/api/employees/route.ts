@@ -65,33 +65,219 @@ function generateMatricule(nom: string, prenom: string): string {
 
 function getWelcomeEmailHtml(_nom: string, prenom: string, matricule: string, pin: string): string {
   return `
-    <div style="font-family: 'Roboto', 'Segoe UI', Arial, sans-serif; background-color:#f4f6f9; padding:32px; color:#1a2340;">
-      <div style="max-width:600px; margin:0 auto; background-color:#ffffff; border-radius:12px; overflow:hidden;">
-        <div style="background:linear-gradient(135deg,#0a1c3b,#1e3a68); color:#ffffff; padding:24px 28px;">
-          <p style="margin:0; font-size:12px; letter-spacing:0.3em; text-transform:uppercase; opacity:0.85;">NovekAI</p>
-          <h1 style="margin:10px 0 0; font-size:22px; font-weight:700;">Confirmation d'enregistrement</h1>
-        </div>
-        <div style="padding:28px;">
-          <p style="margin:0 0 16px; font-size:15px;">Bonjour ${prenom},</p>
-          <p style="margin:0 0 16px; font-size:15px;">Nous vous confirmons votre enregistrement officiel au sein de <strong>NovekAI</strong>.</p>
-          <p style="margin:0 0 18px; font-size:15px;">Les identifiants suivants vous ont été attribués :</p>
-          <div style="padding:16px 20px; border:1px solid #e5e7eb; text-align:center; background-color:#f9fafb; border-radius:8px;">
-            <p style="margin:0; text-transform:uppercase; font-size:11px; letter-spacing:0.18em; color:#6b7280;">Numéro matricule</p>
-            <p style="margin:6px 0 0; font-size:18px; font-weight:700; color:#1f2937; letter-spacing:1px; text-align:justify;">${matricule}</p>
-            <div style="border-top:1px solid #e5e7eb; margin:12px 0;"></div>
-            <p style="margin:0; text-transform:uppercase; font-size:11px; letter-spacing:0.18em; color:#6b7280;">Code PIN</p>
-            <p style="margin:6px 0 0; font-size:18px; font-weight:700; color:#1f2937; letter-spacing:4px; text-align:justify;">${pin}</p>
+    <!DOCTYPE html>
+    <html lang="fr">
+    <head>
+      <meta charset="UTF-8">
+      <meta name="viewport" content="width=device-width, initial-scale=1.0">
+      <title>NovekAI – Confirmation d'enregistrement</title>
+      <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;600;700&display=swap" rel="stylesheet">
+      <style>
+        * {
+          box-sizing: border-box;
+        }
+
+        body {
+          margin: 0;
+          padding: 0;
+          background-color: #f4f6f9;
+          font-family: 'Roboto', 'Segoe UI', Arial, sans-serif;
+          color: #000000;
+          -webkit-text-size-adjust: 100%;
+          -ms-text-size-adjust: 100%;
+        }
+
+        .email-wrapper {
+          background-color: #f4f6f9;
+          padding: 32px 16px;
+        }
+
+        .email-container {
+          max-width: 600px;
+          margin: 0 auto;
+          background-color: #ffffff;
+          border-radius: 12px;
+          overflow: hidden;
+        }
+
+        .email-header {
+          background: linear-gradient(135deg, #0a1c3b, #1e3a68);
+          color: #ffffff;
+          padding: 24px 28px;
+        }
+
+        .email-header .brand {
+          margin: 0;
+          font-size: 12px;
+          letter-spacing: 0.3em;
+          text-transform: uppercase;
+          opacity: 0.85;
+        }
+
+        .email-header h1 {
+          margin: 10px 0 0;
+          font-size: 22px;
+          font-weight: 700;
+          line-height: 1.3;
+        }
+
+        .email-body {
+          padding: 28px;
+        }
+
+        .email-body p {
+          margin: 0 0 16px;
+          font-size: 15px;
+          line-height: 1.6;
+          color: #000000;
+        }
+
+        .credentials-box {
+          padding: 16px 20px;
+          border: 1px solid #e5e7eb;
+          text-align: center;
+          background-color: #f9fafb;
+          border-radius: 8px;
+          margin-bottom: 20px;
+        }
+
+        .credentials-box .label {
+          margin: 0;
+          text-transform: uppercase;
+          font-size: 11px;
+          letter-spacing: 0.18em;
+          color: #000000;
+        }
+
+        .credentials-box .value {
+          margin: 6px 0 0;
+          font-size: 18px;
+          font-weight: 700;
+          color: #FFD700;
+          letter-spacing: 1px;
+        }
+
+        .credentials-box .value-pin {
+          margin: 6px 0 0;
+          font-size: 18px;
+          font-weight: 700;
+          color: #FFD700;
+          letter-spacing: 4px;
+        }
+
+        .credentials-divider {
+          border: none;
+          border-top: 1px solid #e5e7eb;
+          margin: 12px 0;
+        }
+
+        .signature {
+          margin-top: 8px;
+        }
+
+        .email-footer {
+          background-color: #f4f6f9;
+          padding: 16px 28px;
+          text-align: center;
+          font-size: 12px;
+          color: #4b5563;
+        }
+
+        .email-footer p {
+          margin: 0;
+        }
+
+        @media only screen and (max-width: 480px) {
+          .email-wrapper {
+            padding: 12px 6px;
+          }
+
+          .email-container {
+            border-radius: 8px;
+          }
+
+          .email-header {
+            padding: 18px 20px;
+          }
+
+          .email-header .brand {
+            font-size: 11px;
+          }
+
+          .email-header h1 {
+            font-size: 18px;
+            margin-top: 8px;
+          }
+
+          .email-body {
+            padding: 20px 16px;
+          }
+
+          .email-body p {
+            font-size: 14px;
+          }
+
+          .credentials-box {
+            padding: 14px 12px;
+          }
+
+          .credentials-box .value {
+            font-size: 15px;
+            letter-spacing: 0.5px;
+            word-break: break-all;
+          }
+
+          .credentials-box .value-pin {
+            font-size: 20px;
+            letter-spacing: 6px;
+          }
+
+          .email-footer {
+            padding: 14px 16px;
+            font-size: 11px;
+          }
+        }
+      </style>
+    </head>
+    <body>
+      <div class="email-wrapper">
+        <div class="email-container">
+
+          <div class="email-header">
+            <p class="brand">NovekAI</p>
+            <h1>Confirmation d'enregistrement</h1>
           </div>
-          <p style="margin:20px 0 16px; font-size:15px;">Merci de bien vouloir conserver ces informations pour toute démarche administrative interne.</p>
-          <p style="margin:0 0 24px; font-size:15px;">Nous vous souhaitons une excellente prise de fonction.</p>
-          <p style="margin:0; font-size:15px; font-weight:600;">Cordialement,</p>
-          <p style="margin:6px 0 0; font-size:15px;">Direction des Ressources Humaines<br/>NovekAI</p>
-        </div>
-        <div style="background-color:#f4f6f9; padding:16px 28px; text-align:center; font-size:12px; color:#4b5563;">
-          <p style="margin:0;">© ${new Date().getFullYear()} NovekAI. Tous droits réservés.</p>
+
+          <div class="email-body">
+            <p>Bonjour <strong>${prenom}</strong>,</p>
+            <p>Nous vous confirmons votre enregistrement officiel au sein de <strong>NovekAI</strong>.</p>
+            <p>Les identifiants suivants vous ont été attribués :</p>
+
+            <div class="credentials-box">
+              <p class="label">Numéro matricule</p>
+              <p class="value">${matricule}</p>
+              <hr class="credentials-divider">
+              <p class="label">Code PIN</p>
+              <p class="value-pin">${pin}</p>
+            </div>
+
+            <p>Merci de bien vouloir conserver ces informations pour toute démarche administrative interne.</p>
+            <p style="margin-bottom: 24px;">Nous vous souhaitons une excellente prise de fonction.</p>
+
+            <div class="signature">
+              <p><strong>Cordialement,</strong></p>
+              <p style="margin:0;">Direction des Ressources Humaines<br/>NovekAI</p>
+            </div>
+          </div>
+
+          <div class="email-footer">
+            <p>© ${new Date().getFullYear()} NovekAI. Tous droits réservés.</p>
+          </div>
+
         </div>
       </div>
-    </div>
+    </body>
+    </html>
   `
 }
 
