@@ -64,7 +64,7 @@ function generateMatricule(nom: string, prenom: string): string {
 }
 
 // gabarit HTML pour l'email de confirmation
-function getWelcomeEmailHtml(_nom: string, prenom: string, matricule: string): string {
+function getWelcomeEmailHtml(_nom: string, prenom: string, matricule: string, pin: string): string {
   return `
     <div style="font-family: 'Segoe UI', Arial, sans-serif; background-color:#f5f7fb; padding:32px; color:#1a2340;">
       <div style="max-width:600px; margin:0 auto; background-color:#ffffff; border-radius:16px; box-shadow:0 18px 40px rgba(18,42,92,0.12); overflow:hidden;">
@@ -75,13 +75,16 @@ function getWelcomeEmailHtml(_nom: string, prenom: string, matricule: string): s
         <div style="padding:32px;">
           <p style="margin:0 0 16px; font-size:16px;">Bonjour ${prenom},</p>
           <p style="margin:0 0 16px; font-size:16px;">Nous vous confirmons votre enregistrement officiel au sein de <strong>NovekAI</strong>.</p>
-          <p style="margin:0 0 24px; font-size:16px;">Les identifiants suivants vous ont été attribués :</p>
-          <div style="background:linear-gradient(135deg,#eef3ff,#dae4ff); border-radius:14px; padding:24px 28px; border:1px solid rgba(31,59,112,0.18); text-align:center;">
-            <p style="margin:0; text-transform:uppercase; font-size:12px; letter-spacing:0.22em; color:#1f3b70; opacity:0.8;">Numéro matricule</p>
-            <p style="margin:10px 0 0; font-size:30px; font-weight:700; color:#0b1d3c;">${matricule}</p>
+          <p style="margin:0 0 18px; font-size:16px;">Les identifiants suivants vous ont été attribués :</p>
+          <div style="background-color:#fffbeb; border-radius:10px; padding:16px 20px; border:1px solid #fde68a; text-align:center;">
+            <p style="margin:0; text-transform:uppercase; font-size:11px; letter-spacing:0.18em; color:#92400e;">Numéro matricule</p>
+            <p style="margin:6px 0 0; font-size:20px; font-weight:700; color:#f59e0b; letter-spacing:1px;">${matricule}</p>
+            <div style="border-top:1px solid #fde68a; margin:12px 0;"></div>
+            <p style="margin:0; text-transform:uppercase; font-size:11px; letter-spacing:0.18em; color:#92400e;">Code PIN</p>
+            <p style="margin:6px 0 0; font-size:20px; font-weight:700; color:#f59e0b; letter-spacing:4px;">${pin}</p>
           </div>
-          <p style="margin:24px 0 16px; font-size:16px;">Merci de bien vouloir conserver ces informations pour toute démarche administrative interne.</p>
-          <p style="margin:0 0 32px; font-size:16px;">Nous vous souhaitons une excellente prise de fonction.</p>
+          <p style="margin:20px 0 16px; font-size:16px;">Merci de bien vouloir conserver ces informations pour toute démarche administrative interne.</p>
+          <p style="margin:0 0 28px; font-size:16px;">Nous vous souhaitons une excellente prise de fonction.</p>
           <p style="margin:0; font-size:16px; font-weight:600;">Cordialement,</p>
           <p style="margin:6px 0 0; font-size:16px;">Direction des Ressources Humaines<br/>NovekAI</p>
         </div>
@@ -94,7 +97,7 @@ function getWelcomeEmailHtml(_nom: string, prenom: string, matricule: string): s
 }
 
 // envoyer via api resend pour plsu de flexibilité
-async function sendViaResend(to: string, nom: string, prenom: string, matricule: string): Promise<boolean> {
+async function sendViaResend(to: string, nom: string, prenom: string, matricule: string, pin: string): Promise<boolean> {
   if (!RESEND_API_KEY) {
     console.log("[v0] ⚠️ RESEND_API_KEY not set, skipping email")
     return false
@@ -108,7 +111,7 @@ async function sendViaResend(to: string, nom: string, prenom: string, matricule:
       from: "NOVEK AI <assistant@inscription.novekai.agency>",
       to: [to],
       subject: "Confirmation d'enregistrement – NovekAI",
-      html: getWelcomeEmailHtml(nom, prenom, matricule),
+      html: getWelcomeEmailHtml(nom, prenom, matricule, pin),
     })
 
     if (error) {
@@ -125,9 +128,9 @@ async function sendViaResend(to: string, nom: string, prenom: string, matricule:
 }
 
 // Send Welcome Email
-async function sendWelcomeEmail(to: string, nom: string, prenom: string, matricule: string) {
+async function sendWelcomeEmail(to: string, nom: string, prenom: string, matricule: string, pin: string) {
   console.log(`[v0] Attempting to send email to ${to}...`)
-  await sendViaResend(to, nom, prenom, matricule)
+  await sendViaResend(to, nom, prenom, matricule, pin)
 }
 
 // Cloudinary Configuration
@@ -272,7 +275,7 @@ export async function POST(request: NextRequest) {
 
     // Send Welcome Email in background to restore speed
     // We already have detailed logs in the sendWelcomeEmail function
-    sendWelcomeEmail(email, nom, prenom, matricule).catch(err => {
+    sendWelcomeEmail(email, nom, prenom, matricule, pin).catch(err => {
       console.error("[v0] Background promise error (should be caught in fn):", err)
     })
 
