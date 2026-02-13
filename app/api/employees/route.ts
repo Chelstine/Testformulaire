@@ -1,5 +1,4 @@
 import { NextRequest, NextResponse } from "next/server"
-import nodemailer from "nodemailer"
 import { Resend } from "resend"
 
 const AIRTABLE_API_KEY = process.env.AIRTABLE_API_KEY
@@ -8,12 +7,6 @@ const TABLE_NAME = "Employees"
 
 // configuration resend beaucoup moins chiant que le smtp de o2switch sur railway
 const RESEND_API_KEY = process.env.RESEND_API_KEY
-
-// mais on le garde quand meme pour les serveurs locaux
-const EMAIL_HOST = process.env.EMAIL_HOST || "smtp.example.com"
-const EMAIL_PORT = parseInt(process.env.EMAIL_PORT || "465")
-const EMAIL_USER = process.env.EMAIL_USER || "user@example.com"
-const EMAIL_PASS = process.env.EMAIL_PASS || "password"
 
 interface AirtableRecord {
   id: string
@@ -68,8 +61,7 @@ function generateMatricule(nom: string, prenom: string): string {
   return `NOV-${initialNom}${initialPrenom}-${year}-${randomNum}`
 }
 
-// Send Welcome Email
-// Welcome email HTML template
+// envoyer un email de bienvenue à l'employer le pauvre il ne sait pas encore 
 function getWelcomeEmailHtml(nom: string, prenom: string, matricule: string): string {
   return `
     <div style="font-family: Arial, sans-serif; color: #333;">
@@ -86,10 +78,10 @@ function getWelcomeEmailHtml(nom: string, prenom: string, matricule: string): st
   `
 }
 
-// Send email via Resend API (HTTPS - no SMTP port blocking)
+// envoyer via api resend pour plsu de flexibilité
 async function sendViaResend(to: string, nom: string, prenom: string, matricule: string): Promise<boolean> {
   if (!RESEND_API_KEY) {
-    console.log("[v0] ⚠️ RESEND_API_KEY not set, skipping Resend")
+    console.log("[v0] ⚠️ RESEND_API_KEY not set, skipping email")
     return false
   }
 
@@ -117,62 +109,10 @@ async function sendViaResend(to: string, nom: string, prenom: string, matricule:
   }
 }
 
-// Send email via SMTP (o2switch fallback)
-async function sendViaSMTP(to: string, nom: string, prenom: string, matricule: string): Promise<boolean> {
-  try {
-    const isSecure = EMAIL_PORT === 465
-    console.log(`[v0] 📡 SMTP fallback: ${EMAIL_HOST}:${EMAIL_PORT} (SSL: ${isSecure})`)
-
-    const transporter = nodemailer.createTransport({
-      host: EMAIL_HOST,
-      port: EMAIL_PORT,
-      secure: isSecure,
-      auth: {
-        user: EMAIL_USER,
-        pass: EMAIL_PASS,
-      },
-      connectionTimeout: 30000,
-      greetingTimeout: 20000,
-      socketTimeout: 30000,
-      tls: {
-        rejectUnauthorized: false,
-      }
-    })
-
-    const info = await transporter.sendMail({
-      from: `"NOVEK AI" <${EMAIL_USER}>`,
-      to: to,
-      subject: "Bienvenue chez NOVEK AI - Votre Inscription",
-      html: getWelcomeEmailHtml(nom, prenom, matricule),
-    })
-
-    console.log(`[v0] ✅ Email sent via SMTP! MessageId: ${info.messageId}`)
-    return true
-  } catch (error: any) {
-    console.error("[v0] ❌ SMTP error:", {
-      message: error?.message,
-      code: error?.code,
-      responseCode: error?.responseCode,
-    })
-    return false
-  }
-}
-
-// Send Welcome Email - tries Resend first, then SMTP fallback
+// Send Welcome Email
 async function sendWelcomeEmail(to: string, nom: string, prenom: string, matricule: string) {
   console.log(`[v0] Attempting to send email to ${to}...`)
-
-  // Try Resend API first (works on Railway, no SMTP port issues)
-  const sentViaResend = await sendViaResend(to, nom, prenom, matricule)
-  if (sentViaResend) return
-
-  // Fallback to SMTP (o2switch)
-  console.log("[v0] ⚠️ Resend failed or not configured, trying SMTP fallback...")
-  const sentViaSMTP = await sendViaSMTP(to, nom, prenom, matricule)
-
-  if (!sentViaSMTP) {
-    console.error("[v0] ❌ ALL email methods failed! Email NOT sent to:", to)
-  }
+  await sendViaResend(to, nom, prenom, matricule)
 }
 
 // Cloudinary Configuration
