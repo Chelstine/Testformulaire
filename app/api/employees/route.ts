@@ -63,32 +63,31 @@ function generateMatricule(nom: string, prenom: string): string {
   return `NOV-${initialNom}${initialPrenom}-${year}-${randomNum}`
 }
 
-// gabarit HTML pour l'email de confirmation
 function getWelcomeEmailHtml(_nom: string, prenom: string, matricule: string, pin: string): string {
   return `
-    <div style="font-family: 'Segoe UI', Arial, sans-serif; background-color:#f5f7fb; padding:32px; color:#1a2340;">
-      <div style="max-width:600px; margin:0 auto; background-color:#ffffff; border-radius:16px; box-shadow:0 18px 40px rgba(18,42,92,0.12); overflow:hidden;">
-        <div style="background:linear-gradient(135deg,#0b1d3c,#1f3b70); color:#f5f9ff; padding:28px 32px;">
-          <p style="margin:0; font-size:12px; letter-spacing:0.3em; text-transform:uppercase; opacity:0.75;">NovekAI</p>
-          <h1 style="margin:10px 0 0; font-size:24px; font-weight:700;">Confirmation d'enregistrement</h1>
+    <div style="font-family: 'Roboto', 'Segoe UI', Arial, sans-serif; background-color:#f4f6f9; padding:32px; color:#1a2340;">
+      <div style="max-width:600px; margin:0 auto; background-color:#ffffff; border-radius:12px; overflow:hidden;">
+        <div style="background:linear-gradient(135deg,#0a1c3b,#1e3a68); color:#ffffff; padding:24px 28px;">
+          <p style="margin:0; font-size:12px; letter-spacing:0.3em; text-transform:uppercase; opacity:0.85;">NovekAI</p>
+          <h1 style="margin:10px 0 0; font-size:22px; font-weight:700;">Confirmation d'enregistrement</h1>
         </div>
-        <div style="padding:32px;">
-          <p style="margin:0 0 16px; font-size:16px;">Bonjour ${prenom},</p>
-          <p style="margin:0 0 16px; font-size:16px;">Nous vous confirmons votre enregistrement officiel au sein de <strong>NovekAI</strong>.</p>
-          <p style="margin:0 0 18px; font-size:16px;">Les identifiants suivants vous ont été attribués :</p>
-          <div style="background-color:#fffbeb; border-radius:10px; padding:16px 20px; border:1px solid #fde68a; text-align:center;">
-            <p style="margin:0; text-transform:uppercase; font-size:11px; letter-spacing:0.18em; color:#92400e;">Numéro matricule</p>
-            <p style="margin:6px 0 0; font-size:20px; font-weight:700; color:#f59e0b; letter-spacing:1px;">${matricule}</p>
-            <div style="border-top:1px solid #fde68a; margin:12px 0;"></div>
-            <p style="margin:0; text-transform:uppercase; font-size:11px; letter-spacing:0.18em; color:#92400e;">Code PIN</p>
-            <p style="margin:6px 0 0; font-size:20px; font-weight:700; color:#f59e0b; letter-spacing:4px;">${pin}</p>
+        <div style="padding:28px;">
+          <p style="margin:0 0 16px; font-size:15px;">Bonjour ${prenom},</p>
+          <p style="margin:0 0 16px; font-size:15px;">Nous vous confirmons votre enregistrement officiel au sein de <strong>NovekAI</strong>.</p>
+          <p style="margin:0 0 18px; font-size:15px;">Les identifiants suivants vous ont été attribués :</p>
+          <div style="padding:16px 20px; border:1px solid #e5e7eb; text-align:center; background-color:#f9fafb; border-radius:8px;">
+            <p style="margin:0; text-transform:uppercase; font-size:11px; letter-spacing:0.18em; color:#6b7280;">Numéro matricule</p>
+            <p style="margin:6px 0 0; font-size:18px; font-weight:700; color:#1f2937; letter-spacing:1px; text-align:justify;">${matricule}</p>
+            <div style="border-top:1px solid #e5e7eb; margin:12px 0;"></div>
+            <p style="margin:0; text-transform:uppercase; font-size:11px; letter-spacing:0.18em; color:#6b7280;">Code PIN</p>
+            <p style="margin:6px 0 0; font-size:18px; font-weight:700; color:#1f2937; letter-spacing:4px; text-align:justify;">${pin}</p>
           </div>
-          <p style="margin:20px 0 16px; font-size:16px;">Merci de bien vouloir conserver ces informations pour toute démarche administrative interne.</p>
-          <p style="margin:0 0 28px; font-size:16px;">Nous vous souhaitons une excellente prise de fonction.</p>
-          <p style="margin:0; font-size:16px; font-weight:600;">Cordialement,</p>
-          <p style="margin:6px 0 0; font-size:16px;">Direction des Ressources Humaines<br/>NovekAI</p>
+          <p style="margin:20px 0 16px; font-size:15px;">Merci de bien vouloir conserver ces informations pour toute démarche administrative interne.</p>
+          <p style="margin:0 0 24px; font-size:15px;">Nous vous souhaitons une excellente prise de fonction.</p>
+          <p style="margin:0; font-size:15px; font-weight:600;">Cordialement,</p>
+          <p style="margin:6px 0 0; font-size:15px;">Direction des Ressources Humaines<br/>NovekAI</p>
         </div>
-        <div style="background-color:#f5f7fb; padding:18px 32px; text-align:center; font-size:12px; color:#4c5b7a;">
+        <div style="background-color:#f4f6f9; padding:16px 28px; text-align:center; font-size:12px; color:#4b5563;">
           <p style="margin:0;">© ${new Date().getFullYear()} NovekAI. Tous droits réservés.</p>
         </div>
       </div>
