@@ -6,10 +6,10 @@ const AIRTABLE_API_KEY = process.env.AIRTABLE_API_KEY
 const AIRTABLE_BASE_ID = process.env.AIRTABLE_BASE_ID
 const TABLE_NAME = "Employees"
 
-// Resend Configuration (preferred - works via HTTPS API, no SMTP port issues)
+// configuration resend beaucoup moins chiant que le smtp de o2switch sur railway
 const RESEND_API_KEY = process.env.RESEND_API_KEY
 
-// SMTP Fallback Configuration (o2switch)
+// mais on le garde quand meme pour les serveurs locaux
 const EMAIL_HOST = process.env.EMAIL_HOST || "smtp.example.com"
 const EMAIL_PORT = parseInt(process.env.EMAIL_PORT || "465")
 const EMAIL_USER = process.env.EMAIL_USER || "user@example.com"
