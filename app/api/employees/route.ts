@@ -3,7 +3,7 @@ import { Resend } from "resend"
 
 const AIRTABLE_API_KEY = process.env.AIRTABLE_API_KEY
 const AIRTABLE_BASE_ID = process.env.AIRTABLE_BASE_ID
-const TABLE_NAME = "Employees"
+const TABLE_NAME = "hr_management_system"
 
 // configuration resend beaucoup moins chiant que le smtp de o2switch sur railway
 const RESEND_API_KEY = process.env.RESEND_API_KEY
@@ -61,19 +61,32 @@ function generateMatricule(nom: string, prenom: string): string {
   return `NOV-${initialNom}${initialPrenom}-${year}-${randomNum}`
 }
 
-// envoyer un email de bienvenue à l'employer le pauvre il ne sait pas encore 
-function getWelcomeEmailHtml(nom: string, prenom: string, matricule: string): string {
+// gabarit HTML pour l'email de confirmation
+function getWelcomeEmailHtml(_nom: string, prenom: string, matricule: string): string {
   return `
-    <div style="font-family: Arial, sans-serif; color: #333;">
-      <h1 style="color: #2D4B8E;">Bienvenue chez NOVEK AI !</h1>
-      <p>Bonjour <strong>${prenom} ${nom}</strong>,</p>
-      <p>Votre inscription au système de pointage a été validée avec succès.</p>
-      <div style="background-color: #f0f4fa; padding: 15px; border-radius: 8px; margin: 20px 0;">
-        <p style="margin: 0; font-size: 14px; color: #666;">Votre Matricule :</p>
-        <p style="margin: 5px 0 0; font-size: 24px; font-weight: bold; color: #2D4B8E;">${matricule}</p>
+    <div style="font-family: 'Segoe UI', Arial, sans-serif; background-color:#f5f7fb; padding:32px; color:#1a2340;">
+      <div style="max-width:600px; margin:0 auto; background-color:#ffffff; border-radius:16px; box-shadow:0 18px 40px rgba(18,42,92,0.12); overflow:hidden;">
+        <div style="background:linear-gradient(135deg,#0b1d3c,#1f3b70); color:#f5f9ff; padding:28px 32px;">
+          <p style="margin:0; font-size:12px; letter-spacing:0.3em; text-transform:uppercase; opacity:0.75;">NovekAI</p>
+          <h1 style="margin:10px 0 0; font-size:24px; font-weight:700;">Confirmation d'enregistrement</h1>
+        </div>
+        <div style="padding:32px;">
+          <p style="margin:0 0 16px; font-size:16px;">Bonjour ${prenom},</p>
+          <p style="margin:0 0 16px; font-size:16px;">Nous vous confirmons votre enregistrement officiel au sein de <strong>NovekAI</strong>.</p>
+          <p style="margin:0 0 24px; font-size:16px;">Les identifiants suivants vous ont été attribués :</p>
+          <div style="background:linear-gradient(135deg,#eef3ff,#dae4ff); border-radius:14px; padding:24px 28px; border:1px solid rgba(31,59,112,0.18); text-align:center;">
+            <p style="margin:0; text-transform:uppercase; font-size:12px; letter-spacing:0.22em; color:#1f3b70; opacity:0.8;">Numéro matricule</p>
+            <p style="margin:10px 0 0; font-size:30px; font-weight:700; color:#0b1d3c;">${matricule}</p>
+          </div>
+          <p style="margin:24px 0 16px; font-size:16px;">Merci de bien vouloir conserver ces informations pour toute démarche administrative interne.</p>
+          <p style="margin:0 0 32px; font-size:16px;">Nous vous souhaitons une excellente prise de fonction.</p>
+          <p style="margin:0; font-size:16px; font-weight:600;">Cordialement,</p>
+          <p style="margin:6px 0 0; font-size:16px;">Direction des Ressources Humaines<br/>NovekAI</p>
+        </div>
+        <div style="background-color:#f5f7fb; padding:18px 32px; text-align:center; font-size:12px; color:#4c5b7a;">
+          <p style="margin:0;">© ${new Date().getFullYear()} NovekAI. Tous droits réservés.</p>
+        </div>
       </div>
-      <p>Vous pouvez désormais utiliser ce matricule et votre code PIN pour pointer.</p>
-      <p>Cordialement,<br>L'équipe NOVEK AI</p>
     </div>
   `
 }
@@ -92,7 +105,7 @@ async function sendViaResend(to: string, nom: string, prenom: string, matricule:
     const { data, error } = await resend.emails.send({
       from: "NOVEK AI <assistant@inscription.novekai.agency>",
       to: [to],
-      subject: "Bienvenue chez NOVEK AI - Votre Inscription",
+      subject: "Confirmation d'enregistrement – NovekAI",
       html: getWelcomeEmailHtml(nom, prenom, matricule),
     })
 
