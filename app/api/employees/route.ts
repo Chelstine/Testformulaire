@@ -3,7 +3,7 @@ import { Resend } from "resend"
 
 const AIRTABLE_API_KEY = process.env.AIRTABLE_API_KEY
 const AIRTABLE_BASE_ID = process.env.AIRTABLE_BASE_ID
-const TABLE_NAME = "hr_management_system"
+const TABLE_NAME = "Employees"
 
 // configuration resend beaucoup moins chiant que le smtp de o2switch sur railway
 const RESEND_API_KEY = process.env.RESEND_API_KEY
